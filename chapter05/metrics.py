@@ -1,30 +1,29 @@
-from opentelemetry._metrics import get_meter_provider, set_meter_provider
-from opentelemetry.sdk._metrics import MeterProvider
+from opentelemetry.metrics import get_meter_provider, set_meter_provider, Observation
+from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk._metrics.export import (
+from opentelemetry.sdk.metrics.export import (
     ConsoleMetricExporter,
     PeriodicExportingMetricReader,
 )
 import time
-from opentelemetry._metrics.measurement import Measurement
 import resource
-from opentelemetry.sdk._metrics.view import View
-from opentelemetry._metrics.instrument import Counter
-from opentelemetry.sdk._metrics.aggregation import LastValueAggregation
+from opentelemetry.sdk.metrics import View
+from opentelemetry.metrics import Counter
+from opentelemetry.sdk.metrics.aggregation import LastValueAggregation
 
 
-def async_gauge_callback():
+def async_gauge_callback(options):
     rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    yield Measurement(rss, {})
+    yield Observation(rss, {})
 
 
-def async_counter_callback():
-    yield Measurement(10)
+def async_counter_callback(options):
+    yield Observation(10)
 
 
-def async_updowncounter_callback():
-    yield Measurement(20, {"locale": "en-US"})
-    yield Measurement(10, {"locale": "fr-CA"})
+def async_updowncounter_callback(options):
+    yield Observation(20, {"locale": "en-US"})
+    yield Observation(10, {"locale": "fr-CA"})
 
 
 def configure_meter_provider():
@@ -61,9 +60,9 @@ if __name__ == "__main__":
 
     meter.create_observable_counter(
         name="major_page_faults",
-        callback=async_counter_callback,
         description="page faults requiring I/O",
         unit="fault",
+        callbacks=[async_counter_callback],
     )
     # time.sleep(10)
     inventory_counter = meter.create_up_down_counter(
@@ -76,9 +75,9 @@ if __name__ == "__main__":
 
     upcounter_counter = meter.create_observable_up_down_counter(
         name="customer_in_store",
-        callback=async_updowncounter_callback,
         unit="persons",
         description="Keeps a count of customers in the store",
+        callbacks=[async_updowncounter_callback],
     )
     # time.sleep(10)
     histogram = meter.create_histogram(
@@ -91,7 +90,7 @@ if __name__ == "__main__":
     meter.create_observable_gauge(
         name="maxrss",
         unit="bytes",
-        callback=async_gauge_callback,
         description="Max resident set size",
+        callbacks=[async_gauge_callback],
     )
     # time.sleep(10)

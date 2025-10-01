@@ -7,13 +7,12 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExport
 from opentelemetry.semconv.resource import ResourceAttributes
 from opentelemetry.semconv.trace import SpanAttributes
 from local_machine_resource_detector import LocalMachineResourceDetector
-from opentelemetry._metrics import get_meter_provider, set_meter_provider
-from opentelemetry.sdk._metrics import MeterProvider
-from opentelemetry.sdk._metrics.export import (
+from opentelemetry.metrics import get_meter_provider, set_meter_provider, Observation
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import (
     ConsoleMetricExporter,
     PeriodicExportingMetricReader,
 )
-from opentelemetry._metrics.measurement import Measurement
 
 
 def configure_meter(name, version):
@@ -71,14 +70,14 @@ def set_span_attributes_from_flask():
     )
 
 
-def record_max_rss_callback():
-    yield Measurement(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+def record_max_rss_callback(options):
+    yield Observation(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
 
 
 def start_recording_memory_metrics(meter):
     meter.create_observable_gauge(
-        callback=record_max_rss_callback,
         name="maxrss",
         unit="bytes",
         description="Max resident set size",
+        callbacks=[record_max_rss_callback],
     )

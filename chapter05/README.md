@@ -64,3 +64,23 @@ pip install flask requests
 ---
 
 _Cloud Native Observability_
+
+### System Architecture
+```mermaid
+graph TD
+    A[SHOPPER.PY] -->|GET / PRODUCTS<br>PROPAGATION VIA W3C TRACE CONTEXT| B[GROCERY_STORE.PY]
+    B -->|GET / INVENTORY<br>PROPAGATION VIA B3| C[LEGACY_INVENTORY.PY]
+```
+```bash
+SHOPPER.PY
+    |
+    | GET / PRODUCTS
+    | PROPAGATION VIA W3C TRACE CONTEXT
+    ↓
+GROCERY_STORE.PY
+    |
+    | GET / INVENTORY
+    | PROPAGATION VIA B3
+    ↓
+LEGACY_INVENTORY.PY
+```
