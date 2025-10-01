@@ -2,12 +2,16 @@ from flask import Flask, jsonify, request
 from opentelemetry import context
 from opentelemetry.propagate import extract, set_global_textmap
 from opentelemetry.propagators.b3 import B3MultiFormat
-from opentelemetry.trace import SpanKind
+from opentelemetry.propagators.composite import CompositePropagator
+from opentelemetry.trace import SpanKind, propagation
+from opentelemetry.trace.propagation import tracecontext
 from common import configure_tracer, set_span_attributes_from_flask
 
 tracer = configure_tracer("legacy-inventory", "0.9.1")
 app = Flask(__name__)
-set_global_textmap(B3MultiFormat())
+# Set the global propagator to a composite propagator that supports both
+# TraceContext and B3 formats.
+set_global_textmap(CompositePropagator([tracecontext.TraceContextTextMapPropagator(), B3MultiFormat()]))
 
 @app.before_request
 def before_request_func():
