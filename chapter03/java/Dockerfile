@@ -1,7 +1,8 @@
 FROM maven:3.6.0-jdk-11-slim AS build
 COPY BrokenTelephone/src /home/app/src
 COPY BrokenTelephone/pom.xml /home/app
-RUN curl -L https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.7.1/opentelemetry-javaagent-all.jar -o /home/app/opentelemetry-javaagent-all.jar
+RUN curl -L https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar -o /home/app/opentelemetry-javaagent-all.jar
+
 RUN mvn -f /home/app/pom.xml clean package
 
 FROM openjdk:11-jre-slim

@@ -12,6 +12,8 @@ This folder contains examples for Chapter 3.
 ```
 git clone https://github.com/PacktPublishing/Cloud-Native-Observability
 cd Cloud-Native-Observability/chapter3
+dos2unix .\python\*
+docker compose build
 docker compose up
 ```
 
@@ -32,3 +34,4 @@ Some of the available instrumentation libraries in OpenTelemetry:
 ---
 
 _Cloud Native Observability_
+* We will test the various tools to ensure each one is working as expected and is accessible from your browser. Let's start with Jaeger by accessing the following URL: http://localhost:16686. 

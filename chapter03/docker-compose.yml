@@ -14,6 +14,7 @@ services:
       OTEL_EXPORTER_OTLP_INSECURE: "true"
       OTEL_TRACES_EXPORTER: "otlp"
       OTEL_SERVICE_NAME: "brokentelephone-go"
+      TZ: "Asia/Taipei"
   brokentelephone-java:
     image: codeboten/brokentelephone:java
     build: ./java
@@ -27,12 +28,14 @@ services:
       OTEL_EXPORTER_OTLP_INSECURE: "true"
       OTEL_TRACES_EXPORTER: "otlp"
       OTEL_SERVICE_NAME: "brokentelephone-java"
+      TZ: "Asia/Taipei"    
   brokentelephone-js:
     image: codeboten/brokentelephone:js
     build: ./js
     container_name: brokentelephone-js
     depends_on:
       - opentelemetry-collector
+      - brokentelephone-python
     networks:
       - cloud-native-observability
     environment:
@@ -41,6 +44,7 @@ services:
       OTEL_EXPORTER_OTLP_INSECURE: "true"
       OTEL_TRACES_EXPORTER: "otlp_proto_grpc"
       OTEL_SERVICE_NAME: "brokentelephone-js"
+      TZ: "Asia/Taipei"
   brokentelephone-python:
     image: codeboten/brokentelephone:python
     build: ./python
@@ -55,6 +59,7 @@ services:
       OTEL_EXPORTER_OTLP_INSECURE: "true"
       OTEL_TRACES_EXPORTER: "otlp_proto_grpc"
       OTEL_SERVICE_NAME: "brokentelephone-python"
+      TZ: "Asia/Taipei"
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: jaeger
@@ -62,6 +67,8 @@ services:
       - "16686:16686"
     networks:
       - cloud-native-observability
+    environment: 
+      TZ: "Asia/Taipei"  
   opentelemetry-collector:
     image: otel/opentelemetry-collector-contrib:0.42.0
     container_name: opentelemetry-collector
@@ -73,5 +80,7 @@ services:
       - cloud-native-observability
     depends_on:
       - jaeger
+    environment: 
+      TZ: "Asia/Taipei"   
 networks:
   cloud-native-observability:
